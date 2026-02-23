@@ -1,0 +1,6 @@
+node_modules/
+.env
+.spotify-tokens.json
+*.log
+.DS_Store
+.playwright-profile/

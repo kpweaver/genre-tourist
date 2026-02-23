@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Environment & secrets
+.env
+.env.*
+!.env.example
+server/.spotify-tokens.json
+
+# Build output
+dist/
+build/
+client/dist/
+
+# Playwright
+server/.playwright-profile/
+
+# Debug / misc
+debug.png
+*.log
+*.local
+
+# OS
+.DS_Store
+Thumbs.db
