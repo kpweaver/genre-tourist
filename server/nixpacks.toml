@@ -1,0 +1,47 @@
+# nixpacks.toml — inside server/ (Railway root dir is set to server/)
+# Playwright/Chromium requires several system libraries on Linux.
+
+[phases.setup]
+nixPkgs = [
+  "nodejs_20",
+  "chromium",
+  "nss",
+  "nspr",
+  "atk",
+  "at-spi2-atk",
+  "at-spi2-core",
+  "cups",
+  "dbus",
+  "expat",
+  "libdrm",
+  "libxkbcommon",
+  "mesa",
+  "gtk3",
+  "pango",
+  "cairo",
+  "gdk-pixbuf",
+  "glib",
+  "fontconfig",
+  "freetype",
+  "alsa-lib",
+  "xorg.libX11",
+  "xorg.libXcomposite",
+  "xorg.libXdamage",
+  "xorg.libXext",
+  "xorg.libXfixes",
+  "xorg.libXrandr",
+  "xorg.libxcb",
+]
+
+[phases.install]
+cmds = ["npm ci"]
+
+[phases.build]
+cmds = ["npx playwright install chromium"]
+
+[start]
+cmd = "node index.js"
+
+[variables]
+NODE_ENV = "production"
+PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "0"
