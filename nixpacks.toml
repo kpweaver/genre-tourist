@@ -36,10 +36,10 @@ nixPkgs = [
 ]
 
 [phases.install]
-cmds = ["npm ci", "cd server && npm ci"]
+cmds = ["cd server && npm ci"]
 
 [phases.build]
-# Download Playwright's bundled Chromium binary inside the container
+# Install Playwright's bundled Chromium — no client build needed on Railway
 cmds = ["cd server && npx playwright install chromium"]
 
 [start]
