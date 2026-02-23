@@ -34,10 +34,7 @@ nixPkgs = [
 ]
 
 [phases.install]
-cmds = ["npm ci"]
-
-[phases.build]
-cmds = ["npx playwright install chromium"]
+cmds = ["npm ci", "npx playwright install chromium"]
 
 [start]
 cmd = "node index.js"
