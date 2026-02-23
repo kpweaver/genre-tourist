@@ -18,13 +18,27 @@ const TOKENS_FILE = path.join(__dirname, '.spotify-tokens.json');
 
 chromium.use(StealthPlugin());
 
-const app = express();
-const PORT = process.env.PORT || 5000;
+// Shared Playwright launch options — always headless + no-sandbox in production (required for Railway/Linux)
+const PLAYWRIGHT_LAUNCH_OPTS = {
+  headless: true,
+  args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+};
 
-// Use http://127.0.0.1:5000/api/callback and add it in Spotify Dashboard Redirect URIs for the login flow
-const REDIRECT_URI = process.env.SPOTIFY_REDIRECT_URI || 'http://127.0.0.1:5000/api/callback';
+const app = express();
+const PORT = process.env.PORT || 8888;
+const IS_PROD = process.env.NODE_ENV === 'production';
+
+// In production use APP_URL (Railway public URL), otherwise local dev default
+const REDIRECT_URI = IS_PROD
+  ? `${process.env.APP_URL}/api/callback`
+  : (process.env.SPOTIFY_REDIRECT_URI || 'http://127.0.0.1:8888/api/callback');
+
 const SPOTIFY_SCOPES = ['playlist-modify-public', 'playlist-modify-private'];
-const FRONTEND_ORIGIN = process.env.FRONTEND_URL || 'http://localhost:5173';
+
+// Frontend origin: production public URL or local Vite port
+const FRONTEND_ORIGIN = IS_PROD
+  ? process.env.APP_URL
+  : (process.env.FRONTEND_URL || 'http://localhost:3000');
 
 const spotifyApi = new SpotifyWebApi({
   clientId: process.env.SPOTIFY_CLIENT_ID,
@@ -72,7 +86,15 @@ function saveTokens() {
 
 loadTokens();
 
-app.use(cors());
+app.use(cors({
+  origin: (origin, cb) => {
+    // Allow requests with no origin (curl, Postman, same-origin) and the configured frontend
+    const allowed = [FRONTEND_ORIGIN, 'http://localhost:3000', 'http://localhost:5173', 'http://127.0.0.1:8888'];
+    if (!origin || allowed.includes(origin)) return cb(null, true);
+    cb(new Error(`CORS: origin ${origin} not allowed`));
+  },
+  credentials: true,
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -97,10 +119,7 @@ async function scrapeAotyWithPlaywright(genreSlug) {
   let browser;
 
   try {
-    browser = await chromium.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    });
+    browser = await chromium.launch(PLAYWRIGHT_LAUNCH_OPTS);
 
     const page = await browser.newPage();
     const response = await page.goto(url, {
@@ -259,7 +278,7 @@ async function scrapeAotyAlbumTracks(albumPath) {
   const url = `${AOTY_BASE}${pathNorm}`;
   let browser;
   try {
-    browser = await chromium.launch({ headless: true });
+    browser = await chromium.launch(PLAYWRIGHT_LAUNCH_OPTS);
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 15000 });
     await new Promise((r) => setTimeout(r, 1500));
@@ -317,7 +336,7 @@ async function fetchAotyGenres() {
   const url = `${AOTY_BASE}/genre.php`;
   let browser;
   try {
-    browser = await chromium.launch({ headless: true });
+    browser = await chromium.launch(PLAYWRIGHT_LAUNCH_OPTS);
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 15000 });
     await new Promise((r) => setTimeout(r, 1500));

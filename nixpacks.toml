@@ -1,0 +1,50 @@
+# nixpacks.toml — Railway build config for the Genre Tourist server
+# Playwright/Chromium requires several system libraries on Linux.
+
+[phases.setup]
+nixPkgs = [
+  # Core
+  "nodejs_20",
+  # Chromium runtime libraries
+  "chromium",
+  "nss",
+  "nspr",
+  "atk",
+  "at-spi2-atk",
+  "at-spi2-core",
+  "cups",
+  "dbus",
+  "expat",
+  "libdrm",
+  "libxkbcommon",
+  "mesa",
+  "gtk3",
+  "pango",
+  "cairo",
+  "gdk-pixbuf",
+  "glib",
+  "fontconfig",
+  "freetype",
+  "alsa-lib",
+  "xorg.libX11",
+  "xorg.libXcomposite",
+  "xorg.libXdamage",
+  "xorg.libXext",
+  "xorg.libXfixes",
+  "xorg.libXrandr",
+  "xorg.libxcb",
+]
+
+[phases.install]
+cmds = ["npm ci", "cd server && npm ci"]
+
+[phases.build]
+# Download Playwright's bundled Chromium binary inside the container
+cmds = ["cd server && npx playwright install chromium"]
+
+[start]
+cmd = "node server/index.js"
+
+[variables]
+NODE_ENV = "production"
+PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "0"

@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Full-stack application with React frontend and Express backend",
   "scripts": {
+    "start": "node server/index.js",
     "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
     "dev:client": "cd client && npm run dev",
     "dev:server": "cd server && npm run dev",
