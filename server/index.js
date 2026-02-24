@@ -35,10 +35,8 @@ const REDIRECT_URI = IS_PROD
 
 const SPOTIFY_SCOPES = ['playlist-modify-public', 'playlist-modify-private'];
 
-// Frontend origin: production public URL or local Vite port
-const FRONTEND_ORIGIN = IS_PROD
-  ? process.env.APP_URL
-  : (process.env.FRONTEND_URL || 'http://localhost:3000');
+// Frontend origin: set FRONTEND_URL to the deployed frontend domain in production
+const FRONTEND_ORIGIN = process.env.FRONTEND_URL || 'http://localhost:3000';
 
 const spotifyApi = new SpotifyWebApi({
   clientId: process.env.SPOTIFY_CLIENT_ID,
