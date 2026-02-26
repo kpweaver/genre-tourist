@@ -68,7 +68,7 @@ export default function App() {
       const res = await fetch(`${API_BASE}/api/login`)
       const data = await res.json().catch(() => ({}))
       if (!res.ok) throw new Error(data.message || data.error || 'Failed to get login URL')
-      if (!data.url) throw new Error('Server did not return a login URL. Is the backend running on port 5000?')
+      if (!data.url) throw new Error('Server did not return a login URL. Check that VITE_API_URL is set correctly.')
       window.location.href = data.url
     } catch (e) {
       setError(e.message || 'Login failed')
