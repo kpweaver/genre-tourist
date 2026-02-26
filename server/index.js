@@ -481,6 +481,7 @@ app.get('/api/auth/url', (req, res) => {
 
 /** Login flow: returns Spotify auth URL for frontend to redirect to */
 app.get('/api/login', (req, res) => {
+  res.set('Cache-Control', 'no-store');
   const url = spotifyApi.createAuthorizeURL(SPOTIFY_SCOPES, null);
   res.json({ url });
 });
