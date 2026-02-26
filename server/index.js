@@ -86,10 +86,10 @@ loadTokens();
 
 app.use(cors({
   origin: (origin, cb) => {
-    // Allow requests with no origin (curl, Postman, same-origin) and the configured frontend
     const allowed = [FRONTEND_ORIGIN, 'http://localhost:3000', 'http://localhost:5173', 'http://127.0.0.1:8888'];
     if (!origin || allowed.includes(origin)) return cb(null, true);
-    cb(new Error(`CORS: origin ${origin} not allowed`));
+    console.warn(`CORS blocked origin: ${origin} (allowed: ${allowed.filter(Boolean).join(', ')})`);
+    cb(null, false);
   },
   credentials: true,
 }));
